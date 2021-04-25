@@ -1,0 +1,58 @@
+//@version=3
+study("Day High/Low", overlay=true)
+t = time("720", session.extended) // 1440=60*12 is the number of minutes in a half a day.
+is_first = na(t[1]) and not na(t) or t[1] < t
+plotshape(is_first, color=red, style=shape.arrowdown)
+
+day_high = na
+day_low = na
+
+if is_first and barstate.isnew
+    day_high := high
+    day_low := low
+else
+    day_high := day_high[1]
+    day_low := day_low[1]
+
+if high > day_high
+    day_high := high
+    
+if low < day_low
+    day_low := low
+    
+plot(day_high, color=maroon,style=circles,linewidth=2,transp=0)
+plot(day_low, color=navy,style=circles,linewidth=2,transp=0)
+
+
+//100X
+CloseHigh100= (day_high-(day_high*0.49/100))
+CloseLow100 = (day_low+(day_low*0.51/100))
+
+ch100= CloseHigh100<day_low?day_low:CloseHigh100
+cl100= CloseLow100>day_high?day_high:CloseLow100
+
+h100=plot(ch100, color=green,style=circles,linewidth=1,transp=0, title='Liquidation point for x100 high')
+l100=plot(cl100, color=red,style=circles,linewidth=1,transp=0,title='Liquidation point for x100 low')
+//50X
+CloseHigh50= (day_high-(day_high*1.47/100))
+CloseLow50 = (day_low+(day_low*1.55/100))
+
+ch50= CloseHigh50<day_low?day_low:CloseHigh50
+cl50= CloseLow50>day_high?day_high:CloseLow50
+
+h50=plot(ch50, color=green,style=circles,linewidth=1,transp=0,title='Liquidation point for x50 high') 
+l50=plot(cl50, color=red,style=circles,linewidth=1,transp=0, title='Liquidation point for x50 low')
+// //25X
+CloseHigh25= (day_high-(day_high*3.38/100))
+CloseLow25 = (day_low+(day_low*3.7/100))
+
+ch25= CloseHigh25<day_low?day_low:CloseHigh25
+cl25= CloseLow25>day_high?day_high:CloseLow25
+
+h25=plot(ch25, color=green,style=circles,linewidth=1,transp=0)
+l25=plot(cl25, color=red,style=circles,linewidth=1,transp=0)
+
+fill(h100, h50, color=lime, title="High Target Range")
+fill(l100, l50, color=fuchsia, title="Low Target Range")
+fill(h50, h25, color=fuchsia, title="High Target Range")
+fill(l50, l25, color=lime, title="Low Target Range")
